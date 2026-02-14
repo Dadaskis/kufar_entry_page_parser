@@ -27,12 +27,12 @@ cd kufar_entry_page_parser
 ## Getting a Token
 - You go to any store item where you'd be able to click the "Call"/"Позвонить" button.
 <p align="center">
-	<img src="images/example0.jpg" width="640" alt="Nice image over here...">
+	<img src="images/example0.jpg" width="300" alt="Nice image over here...">
 </p>
 - You click that button.
 - You'll see the following window:
 <p align="center">
-	<img src="images/example1.jpg" width="640" alt="Nice image over here...">
+	<img src="images/example1.jpg" width="300" alt="Nice image over here...">
 </p>
 - Press F12 to open up web-developer toolkit.
 - Go to "Networking".
