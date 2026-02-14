@@ -2,8 +2,60 @@ import requests
 from requests.exceptions import ReadTimeout
 from bs4 import BeautifulSoup
 import traceback
+import time
+import random
 
-r = requests.get('https://www.kufar.by/l')
+token = input("Enter your authorization token: ")
+
+user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0"
+user_agent_headers_simple = {
+    "User-Agent" : user_agent,
+}
+user_agent_headers = {
+    "User-Agent" : user_agent,
+    "Origin" : "https://www.kufar.by",
+    "Referer" : "https://www.kufar.by/",
+    "Priority" : "u=4",
+    "Host" : "api.kufar.by",
+    "Accept" : "*/*",
+    "Accept-Language" : "en-US,en;q=0.9",
+    "Accept-Encoding" : "gzip, deflate, br, zstd",
+    "Content-type" : "application/json",
+    "g-recaptcha-response" : "",
+    "X-App-Name" : "Web Kufar",
+    "X-Pulse-Environment-Id" : "6bc55ac4-4edd-4d5e-8f24-f188ac377de7",
+    "X-Rudder-Anonymous-Id" : "6bc55ac4-4edd-4d5e-8f24-f188ac377de7",
+    "X-App-Request-Source" : "ad_view",
+    "Connection" : "keep-alive",
+    "Sec-Fetch-Dest" : "empty",
+    "Sec-Fetch-Mode" : "cors",
+    "Sec-Fetch-Site" : "same-site",
+    "TE": "trailers"
+}
+phone_token_headers = {
+    "User-Agent" : user_agent,
+    "Authorization" : token,
+    "Origin" : "https://www.kufar.by",
+    "Referer" : "https://www.kufar.by/",
+    "Priority" : "u=4",
+    "Host" : "api.kufar.by",
+    "Accept" : "*/*",
+    "Accept-Language" : "en-US,en;q=0.9",
+    "Accept-Encoding" : "gzip, deflate, br, zstd",
+    "Content-type" : "application/json",
+    "g-recaptcha-response" : "",
+    "X-App-Name" : "Web Kufar",
+    "X-Pulse-Environment-Id" : "6bc55ac4-4edd-4d5e-8f24-f188ac377de7",
+    "X-Rudder-Anonymous-Id" : "6bc55ac4-4edd-4d5e-8f24-f188ac377de7",
+    "X-App-Request-Source" : "ad_view",
+    "Connection" : "keep-alive",
+    "Sec-Fetch-Dest" : "empty",
+    "Sec-Fetch-Mode" : "cors",
+    "Sec-Fetch-Site" : "same-site",
+    "TE": "trailers"
+}
+
+r = requests.get('https://www.kufar.by/l', headers=user_agent_headers_simple)
 r.encoding = "utf-8"
 html_code = r.text
 print("HTML Code Length: " + str(len(html_code)))
@@ -44,8 +96,22 @@ for section in sections:
 
     phone_text = "Undefined"
     try:
-        phone_req = requests.get(f"https://api.kufar.by/search-api/v2/item/{item_id}/phone")
-        
+        phone_req = requests.get(f"https://api.kufar.by/search-api/v2/item/{item_id}/phone", headers=phone_token_headers)
+        phone_options_req = requests.options(f"https://api.kufar.by/search-api/v2/item/{item_id}/phone", headers=user_agent_headers)
+        stat_ping_req = requests.put(f"https://statpoints.kufar.by/v1/statpoints/increment?ad={item_id}&statpoint=phoneview", headers=user_agent_headers)
+        cre_post_req = requests.post(
+            f"https://cre-api.kufar.by/fb-event-broker/v1/event",
+            headers=phone_token_headers,
+            data={
+                "event_name" : "Generalist_call_click",
+                "event_id" : "7535499026424987",
+                "action_source" : "website",
+                "event_source_url" : f"https://www.kufar.by/item/{item_id}?searchId=4e6e01c4-ef44-462e-b1f0-eda88e65fc5d&r_block=Previously%20Viewed"
+            }
+        )
+        stat_ping_options_req = requests.put(f"https://statpoints.kufar.by/v1/statpoints/increment?ad={item_id}&statpoint=phoneview", headers=user_agent_headers)
+        cre_post_options_req = requests.post(f"https://cre-api.kufar.by/fb-event-broker/v1/event", headers=user_agent_headers)
+
         phone_req_json = phone_req.json()
         
         if phone_req_json.get("error") != None:
@@ -54,6 +120,8 @@ for section in sections:
             if not isinstance(error_dict, str):    
                 if error_dict.get("message") != None:
                     phone_text += ": " + error_dict.get("message")
+            else:
+                phone_text += ": " + str(error_dict)
         else:
             phone_text = phone_req_json.get("phone")
             if phone_text == None:
@@ -63,7 +131,7 @@ for section in sections:
     
     description_text = "Undefined"
     try:
-        description_req = requests.get(f"https://www.kufar.by/item/{item_id}")
+        description_req = requests.get(f"https://www.kufar.by/item/{item_id}", headers=user_agent_headers_simple)
         description_req.encoding = "utf-8"
         description_text = ""
         desc_html_code = description_req.text
@@ -105,3 +173,5 @@ for section in sections:
     print()
     print()
     print()
+
+    time.sleep(random.uniform(10, 20))
