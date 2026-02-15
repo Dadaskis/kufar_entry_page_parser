@@ -15,6 +15,7 @@ A Python script to scrape ads from the entry page of Kufar.by, extracting listin
 - Python 3.6+
 - requests
 - beautifulsoup4
+- lxml
 
 ## Installation
 
