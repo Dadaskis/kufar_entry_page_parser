@@ -56,3 +56,7 @@ cd kufar_entry_page_parser
 
 - Tokens will expire and you will need to repeat the process of getting a token.
 - Eventually you might hit an error that says "ad phone view limit has been reached", in this case you might need a different account (a different token) OR wait for the next day. Sorry, there's no other way!
+
+---
+
+*This was built for educational purposes to demonstrate web scraping techniques. The API endpoints used are publicly accessible via the Kufar website. Please respect robots.txt and terms of service. Not intended for commercial use or data hoarding.*
